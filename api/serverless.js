@@ -16,7 +16,7 @@ const fastify = Fastify({
 await fastify.register(helmet);
 
 await fastify.register(cors, {
-    origin: "https://lexicographia.org",
+    origin: ["https://lexicographia.vercel.app", "https://lexicographia.org"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true
 });
