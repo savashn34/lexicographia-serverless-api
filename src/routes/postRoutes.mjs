@@ -122,7 +122,7 @@ const postRoutes = (fastify, options, done) => {
 
     });
 
-    fastify.post('/api/login', { schema: loginSchema }, async (req, reply) => {
+    fastify.post('/login', { schema: loginSchema }, async (req, reply) => {
         const user = await User.findOne({
             $or: [
                 { email: req.body.username },
