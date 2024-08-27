@@ -1,5 +1,6 @@
 import dictModel, { Lexicographia, User } from "../model/model.mjs";
 import { deleteDictionarySchema, deleteProfileSchema, deleteWordSchema } from "../schemas/deleteSchemas.mjs";
+import mongoose from "mongoose";
 
 const deleteRoutes = (fastify, options, done) => {
 
@@ -25,19 +26,31 @@ const deleteRoutes = (fastify, options, done) => {
     });
 
     fastify.delete('/api/:db/delete/dictionary', { schema: deleteDictionarySchema, onRequest: [fastify.authenticate] }, async (req, reply) => {
-        const db = req.params.db;
+        const dbUrl = req.params.db;
         const userId = req.user._id;
 
         const deletedDictionary = await Lexicographia.findOneAndUpdate(
-            { url: db, admin: userId },
+            { url: dbUrl, admin: userId },
             { $set: { updatedAt: new Date(), isDeleted: true } }
         );
 
-        const dictionary = await dictModel(db);
-        const droppedDict = await dictionary.collection.drop();
-        console.log(droppedDict)
-        return reply.send(`${deletedDictionary.name} deleted successfully!`)
+        if (!deletedDictionary) {
+            return reply.status(404).send('Dictionary not found or you do not have permission to delete it.');
+        }
 
+        const dictionary = await dictModel(dbUrl);
+        const db = dictionary.db.client.db();
+
+        const collectionName = dictionary.collection.name;
+        const collections = await db.listCollections({ name: collectionName }).toArray();
+
+        if (collections.length > 0) {
+            await db.dropCollection(collectionName);
+            return reply.send(`${deletedDictionary.name} deleted successfully!`);
+
+        } else {
+            return reply.status(404).send('Dictionary not found.');
+        }
     });
 
     fastify.delete('/api/delete/profile', { schema: deleteProfileSchema, onRequest: [fastify.authenticate] }, async (req, reply) => {

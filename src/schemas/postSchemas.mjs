@@ -85,7 +85,7 @@ export const createDictionarySchema = {
         type: 'object',
         properties: {
             name: { type: 'string' },
-            url: { type: 'string', minLength: 3 },
+            url: { type: 'string', minLength: 3, maxLength: 16 },
             description: { type: 'string', nullable: true },
             contact: { type: 'string' },
             sources: { type: 'array' },
@@ -149,7 +149,8 @@ export const registerSchema = {
             name: { type: 'string' },
             username: {
                 type: 'string',
-                minLength: 3
+                minLength: 3,
+                maxLength: 16
             },
             email: { type: 'string', format: 'email' },
             password: {

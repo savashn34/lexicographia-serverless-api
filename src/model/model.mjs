@@ -11,7 +11,7 @@ const usersMongoSchema = mongoose.Schema({
         required: true,
         unique: true,
         minlength: 3,
-        maxlength: 30
+        maxlength: 16
     },
     email: {
         type: String,
@@ -30,7 +30,13 @@ export const User = mongoose.model("User", usersMongoSchema);
 
 const lgMongoSchema = mongoose.Schema({
     name: String,
-    url: String,
+    url: {
+        type: String,
+        required: true,
+        unique: true,
+        minlength: 3,
+        maxlength: 16
+    },
     description: String,
     admin: {
         type: Schema.Types.ObjectId,
